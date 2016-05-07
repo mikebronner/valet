@@ -15,8 +15,8 @@ if (version_compare(PHP_VERSION, '5.5.9', '<')) {
     exit(1);
 }
 
-if (exec('which brew') != '/usr/local/bin/brew') {
-    echo 'Valet requires Brew to be installed on your Mac.';
-
-    exit(1);
-}
+// if (exec('which brew') != '/usr/local/bin/brew') {
+//     echo 'Valet requires Brew to be installed on your Mac.';
+//
+//     exit(1);
+// }

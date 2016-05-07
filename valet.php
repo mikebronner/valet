@@ -40,7 +40,7 @@ $app->command('install', function ($output) {
 
     Valet\PhpFpm::install($output);
 
-    Valet\DnsMasq::install($output);
+    // Valet\DnsMasq::install($output);
 
     Valet\Caddy::restart();
 
@@ -73,7 +73,10 @@ $app->command('current-domain', function ($output) {
  * Add the current working directory to the paths configuration.
  */
 $app->command('park', function ($output) {
-    Valet\Configuration::addPath(getcwd());
+    $path = getcwd();
+
+    Valet\Configuration::addPath($path);
+    Valet\Bonjour::prepare($path);
 
     $output->writeln("<info>This directory has been added to Valet's paths.</info>");
 });
