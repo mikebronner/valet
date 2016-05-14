@@ -8,45 +8,52 @@ use Symfony\Component\Process\Process;
 class Bonjour
 {
     /**
-     * Register sites with Bonjour.
+     * Register all parked sites with Bonjour.
      *
-     * @param  OutputInterface  $output
+     * @param  string          $path
+     * @param  OutputInterface $output
      * @return void
      */
-    public static function prepare($path)
+    public static function prepare($path, $output)
     {
         $sites = array_filter(glob("{$path}/*"), 'is_dir');
         array_filter($sites, 'trim');
-        array_map(function ($site) {
-            static::register(basename(strtolower($site)));
+        array_map(function ($site) use ($output) {
+            static::register(basename(strtolower($site)), $output);
         }, $sites);
+
+        $output->writeln("");
     }
 
-    public static function register($path)
+    /**
+     * Register site with Bonjour.
+     *
+     * @param  string          $path
+     * @param  OutputInterface $output
+     * @return void
+     */
+    public static function register($path, $output)
     {
         $command = "dns-sd -P {$path} _http._tcp local 80 {$path}.local 127.0.0.1";
         $outputFile = tempnam('~', 'valet_');
-        $output = '';
+        $fileOutput = '';
         $timer = 0;
-        $sleepInterval = 500;
-        $file = fopen($outputFile, 'r');
-        // var_dump($path);
-        // die();
-        // register each foldername.local in Bonjour to point to localhost
-        exec(sprintf("%s > %s 2>&1 &", $command, $outputFile));
-        while ($timer < 5000 && $output === '') {
-            if (filesize($outputFile)) {
-                $output = fread($file, filesize($outputFile));
-                var_dump($output);
-            }
+        $sleepInterval = .3;
 
+        $file = fopen($outputFile, 'r');
+        exec(sprintf("%s > %s 2>&1 & echo $!", $command, $outputFile), $pidArray);
+        $pid = $pidArray[0];
+var_dump($pid);
+        while ($timer < 5 && $fileOutput === '') {
+            time_nanosleep(0, $sleepInterval * 1000000000);
+            $fileOutput = fread($file, 4096);
             $timer += $sleepInterval;
-            time_nanosleep(0, $sleepInterval);
-            var_dump($path, $timer, $output);
         }
 
         fclose($file);
+        // run_as_root("kill {$pid}");
+        unlink($outputFile);
 
-        // unlink($outputFile);
+        $output->writeln("<info>Registestered 'http://{$path}.local'</info> ✔︎");
     }
 }

@@ -83,7 +83,7 @@ class PhpFpm
      */
     public static function start()
     {
-        run(static::phpFpmPath());
+        run(static::phpPath());
 
         // Brew::stopService('php56', 'php70');
     }
@@ -116,7 +116,7 @@ class PhpFpm
         // }
     }
 
-    protected static function phpFpmPath()
+    protected static function phpPath()
     {
         return run('which php');
     }

@@ -55,7 +55,7 @@ $app->command('domain domain', function ($domain, $output) {
 
     $domain = trim($domain, '.');
 
-    Valet\DnsMasq::updateDomain(Valet\Configuration::read()['domain'], $domain);
+    // Valet\DnsMasq::updateDomain(Valet\Configuration::read()['domain'], $domain);
 
     Valet\Configuration::updateKey('domain', $domain);
 
@@ -76,7 +76,7 @@ $app->command('park', function ($output) {
     $path = getcwd();
 
     Valet\Configuration::addPath($path);
-    Valet\Bonjour::prepare($path);
+    Valet\Bonjour::prepare($path, $output);
 
     $output->writeln("<info>This directory has been added to Valet's paths.</info>");
 });
